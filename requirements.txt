@@ -1,0 +1,26 @@
+# Termux AI Manager Requirements
+# This file lists required packages that must be installed for the tool to work properly
+# The script will check and optionally install these dependencies on startup
+
+# Package manager (required) - nala provides a better apt frontend
+nala
+
+# Mathematical calculations (required for resource monitoring)
+bc
+
+# Core utilities (required for system operations)
+coreutils
+
+# Terminal utilities (required for interactive menu)
+ncurses-utils
+
+# Process utilities (required for process monitoring)
+procps
+
+# File utilities (required for system info)
+findutils
+
+# Text processing (required for parsing)
+grep
+sed
+gawk
