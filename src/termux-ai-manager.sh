@@ -20,6 +20,7 @@ REQUIREMENTS_FILE="${SCRIPT_DIR}/../requirements.txt"
 CONFIG_DIR="${HOME}/.config/termux-ai-manager"
 LOG_FILE="${CONFIG_DIR}/maintenance.log"
 AI_SUGGESTIONS_FILE="${CONFIG_DIR}/ai_suggestions.json"
+ASCII_SETUP_MARKER="${CONFIG_DIR}/.ascii_setup_done"
 
 # Colors for output
 RED='\033[0;31m'
@@ -161,6 +162,97 @@ declare -A PACKAGE_COMMANDS=(
 init_config() {
     mkdir -p "${CONFIG_DIR}"
     touch "${LOG_FILE}"
+}
+
+# Check and setup ASCII support packages (runs only once after install)
+check_ascii_support() {
+    # If already set up, skip
+    if [ -f "${ASCII_SETUP_MARKER}" ]; then
+        return 0
+    fi
+    
+    # Packages needed for proper ASCII/Unicode display
+    local ascii_packages=("ncurses-utils" "coreutils")
+    local missing_ascii=()
+    
+    for pkg in "${ascii_packages[@]}"; do
+        local cmd_to_check="${PACKAGE_COMMANDS[$pkg]:-$pkg}"
+        if ! command -v "$cmd_to_check" &> /dev/null; then
+            missing_ascii+=("$pkg")
+        fi
+    done
+    
+    # If all ASCII packages are installed, mark as done
+    if [ ${#missing_ascii[@]} -eq 0 ]; then
+        touch "${ASCII_SETUP_MARKER}"
+        return 0
+    fi
+    
+    # Display ASCII setup prompt
+    clear
+    echo -e "${GREEN}"
+    cat << 'EOF'
+    +----------------------------------------------------------+
+    |                                                          |
+    |              ASCII SUPPORT SETUP REQUIRED                |
+    |                                                          |
+    +----------------------------------------------------------+
+EOF
+    echo -e "${NC}"
+    
+    echo -e "${YELLOW}This tool requires the following packages for proper display:${NC}"
+    echo ""
+    for pkg in "${missing_ascii[@]}"; do
+        echo -e "  ${CYAN}•${NC} ${pkg}"
+    done
+    echo ""
+    echo -e "${WHITE}These packages enable ASCII art and terminal features.${NC}"
+    echo ""
+    echo -ne "${YELLOW}Would you like to install them now? [y/N]: ${NC}"
+    read -r response
+    
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        echo ""
+        for pkg in "${missing_ascii[@]}"; do
+            echo -ne "${BLUE}[*]${NC} Installing ${pkg}... "
+            if command -v pkg &> /dev/null; then
+                pkg install -y "$pkg" &> /dev/null && echo -e "${GREEN}Done${NC}" || echo -e "${RED}Failed${NC}"
+            elif command -v apt &> /dev/null; then
+                apt install -y "$pkg" &> /dev/null && echo -e "${GREEN}Done${NC}" || echo -e "${RED}Failed${NC}"
+            fi
+        done
+        
+        # Mark as done so we don't ask again
+        touch "${ASCII_SETUP_MARKER}"
+        echo ""
+        echo -e "${GREEN}[+] ASCII support setup complete!${NC}"
+        sleep 1
+        return 0
+    else
+        # User denied - exit with message
+        echo ""
+        echo -e "${RED}"
+        cat << 'EOF'
+    +----------------------------------------------------------+
+    |                                                          |
+    |   ╔═══════════════════════════════════════════════════╗  |
+    |   ║                                                   ║  |
+    |   ║   Sorry, but... No.                               ║  |
+    |   ║                                                   ║  |
+    |   ║   This tool requires ASCII support packages       ║  |
+    |   ║   to function properly. Without them, the         ║  |
+    |   ║   interface will not display correctly.           ║  |
+    |   ║                                                   ║  |
+    |   ║   Please run the script again and accept the      ║  |
+    |   ║   package installation to continue.               ║  |
+    |   ║                                                   ║  |
+    |   ╚═══════════════════════════════════════════════════╝  |
+    |                                                          |
+    +----------------------------------------------------------+
+EOF
+        echo -e "${NC}"
+        exit 1
+    fi
 }
 
 # Check and install requirements from requirements.txt
@@ -1005,6 +1097,7 @@ interactive_mode() {
 # Main entry point
 main() {
     init_config
+    check_ascii_support
     
     case "${1:-menu}" in
         info)
