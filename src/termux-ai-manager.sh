@@ -27,7 +27,117 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
+WHITE='\033[1;37m'
+BOLD='\033[1m'
+DIM='\033[2m'
 NC='\033[0m' # No Color
+
+# ASCII Art Logo
+print_logo() {
+    echo -e "${CYAN}"
+    cat << 'EOF'
+  _______                           
+ |__   __|                          
+    | | ___ _ __ _ __ ___  _   ___  __
+    | |/ _ \ '__| '_ ` _ \| | | \ \/ /
+    | |  __/ |  | | | | | | |_| |>  < 
+    |_|\___|_|  |_| |_| |_|\__,_/_/\_\
+                                      
+     _    ___   __  __                
+    / \  |_ _| |  \/  | __ _ _ __     
+   / _ \  | |  | |\/| |/ _` | '_ \    
+  / ___ \ | |  | |  | | (_| | | | |   
+ /_/   \_\___| |_|  |_|\__,_|_| |_|   
+EOF
+    echo -e "${NC}"
+}
+
+# Print themed header with box design
+print_themed_header() {
+    local title="$1"
+    local width=48
+    local title_len=${#title}
+    local left_pad=$(( (width - title_len) / 2 ))
+    local right_pad=$(( width - title_len - left_pad ))
+    
+    echo -e "${MAGENTA}"
+    echo "+--------------------------------------------------+"
+    echo "|                                                  |"
+    printf "| %${left_pad}s${WHITE}${BOLD}%s${NC}${MAGENTA}%${right_pad}s |\n" "" "$title" ""
+    echo "|                                                  |"
+    echo "+--------------------------------------------------+"
+    echo -e "${NC}"
+}
+
+# Print themed footer
+print_themed_footer() {
+    echo -e "${MAGENTA}"
+    echo "+--------------------------------------------------+"
+    echo -e "|  ${DIM}${WHITE}Powered by Termux AI Manager v${VERSION}${NC}${MAGENTA}             |"
+    echo -e "|  ${DIM}${WHITE}(c) 2025 B.Rooster <DaRipper>${NC}${MAGENTA}                  |"
+    echo "+--------------------------------------------------+"
+    echo -e "${NC}"
+}
+
+# Print section divider
+print_divider() {
+    echo -e "${DIM}${CYAN}---------------------------------------------------${NC}"
+}
+
+# Print mini header for subsections
+print_section() {
+    local title="$1"
+    echo -e "\n${YELLOW}[ ${WHITE}${BOLD}$title${NC}${YELLOW} ]${NC}"
+    echo -e "${DIM}${CYAN}..................................................${NC}"
+}
+
+# Splash screen with loading animation
+show_splash_screen() {
+    clear
+    echo -e "${MAGENTA}"
+    cat << 'EOF'
+    +----------------------------------------------------------+
+    |                                                          |
+    |   ████████╗███████╗██████╗ ███╗   ███╗██╗   ██╗██╗  ██╗  |
+    |   ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║   ██║╚██╗██╔╝  |
+    |      ██║   █████╗  ██████╔╝██╔████╔██║██║   ██║ ╚███╔╝   |
+    |      ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║   ██║ ██╔██╗   |
+    |      ██║   ███████╗██║  ██║██║ ╚═╝ ██║╚██████╔╝██╔╝ ██╗  |
+    |      ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝  |
+    |                                                          |
+    |         █████╗ ██╗    ███╗   ███╗ ██████╗ ██████╗        |
+    |        ██╔══██╗██║    ████╗ ████║██╔════╝ ██╔══██╗       |
+    |        ███████║██║    ██╔████╔██║██║  ███╗██████╔╝       |
+    |        ██╔══██║██║    ██║╚██╔╝██║██║   ██║██╔══██╗       |
+    |        ██║  ██║██║    ██║ ╚═╝ ██║╚██████╔╝██║  ██║       |
+    |        ╚═╝  ╚═╝╚═╝    ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝       |
+    |                                                          |
+    +----------------------------------------------------------+
+EOF
+    echo -e "${NC}"
+    
+    echo -e "${DIM}${WHITE}              AI-Powered System Maintenance Tool${NC}"
+    echo -e "${DIM}${CYAN}                       Version ${VERSION}${NC}"
+    echo ""
+    echo -e "${YELLOW}               (c) 2025 B.Rooster <DaRipper>${NC}"
+    echo ""
+    
+    # Quick loading animation (reduced delays)
+    echo -ne "${CYAN}                     Loading "
+    for i in {1..5}; do
+        echo -ne "█"
+        sleep 0.1
+    done
+    for i in {1..5}; do
+        echo -ne "░"
+        sleep 0.05
+    done
+    echo -e " ${GREEN}Done!${NC}"
+    echo ""
+    
+    sleep 0.2
+}
 
 # Package to command mapping (package_name:command_name)
 # Some packages provide commands with different names
@@ -133,25 +243,23 @@ log() {
 
 # Print colored output
 print_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+    echo -e "${BLUE}[*]${NC} $1"
 }
 
 print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+    echo -e "${GREEN}[+]${NC} $1"
 }
 
 print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+    echo -e "${YELLOW}[!]${NC} $1"
 }
 
 print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    echo -e "${RED}[-]${NC} $1"
 }
 
 print_header() {
-    echo -e "${CYAN}========================================${NC}"
-    echo -e "${CYAN}  $1${NC}"
-    echo -e "${CYAN}========================================${NC}"
+    print_themed_header "$1"
 }
 
 # Get system information
@@ -159,28 +267,28 @@ get_system_info() {
     print_header "System Information"
     
     # Device info
-    echo -e "${YELLOW}Device:${NC}"
+    print_section "Device"
     if command -v getprop &> /dev/null; then
-        echo "  Model: $(getprop ro.product.model 2>/dev/null || echo 'Unknown')"
-        echo "  Android: $(getprop ro.build.version.release 2>/dev/null || echo 'Unknown')"
+        echo -e "  ${CYAN}Model:${NC}   $(getprop ro.product.model 2>/dev/null || echo 'Unknown')"
+        echo -e "  ${CYAN}Android:${NC} $(getprop ro.build.version.release 2>/dev/null || echo 'Unknown')"
     else
-        echo "  Running in non-Android environment"
-        echo "  OS: $(uname -s) $(uname -r)"
+        echo -e "  ${CYAN}System:${NC}  Non-Android environment"
+        echo -e "  ${CYAN}OS:${NC}      $(uname -s) $(uname -r)"
     fi
     
     # CPU info
-    echo -e "\n${YELLOW}CPU:${NC}"
+    print_section "CPU"
     if [ -f /proc/cpuinfo ]; then
         local cpu_model
         cpu_model=$(grep -m1 'model name\|Hardware' /proc/cpuinfo | cut -d: -f2 | sed 's/^[ \t]*//' || echo "Unknown")
         local cpu_cores
         cpu_cores=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || echo "Unknown")
-        echo "  Model: ${cpu_model:-Unknown}"
-        echo "  Cores: ${cpu_cores}"
+        echo -e "  ${CYAN}Model:${NC}   ${cpu_model:-Unknown}"
+        echo -e "  ${CYAN}Cores:${NC}   ${cpu_cores}"
     fi
     
     # Memory info
-    echo -e "\n${YELLOW}Memory:${NC}"
+    print_section "Memory"
     if [ -f /proc/meminfo ]; then
         local total_mem
         total_mem=$(grep MemTotal /proc/meminfo | awk '{printf "%.2f GB", $2/1024/1024}')
@@ -188,15 +296,16 @@ get_system_info() {
         free_mem=$(grep MemAvailable /proc/meminfo | awk '{printf "%.2f GB", $2/1024/1024}')
         local used_mem
         used_mem=$(awk '/MemTotal/{t=$2}/MemAvailable/{a=$2}END{printf "%.2f GB", (t-a)/1024/1024}' /proc/meminfo)
-        echo "  Total: ${total_mem}"
-        echo "  Used: ${used_mem}"
-        echo "  Available: ${free_mem}"
+        echo -e "  ${CYAN}Total:${NC}     ${total_mem}"
+        echo -e "  ${CYAN}Used:${NC}      ${used_mem}"
+        echo -e "  ${CYAN}Available:${NC} ${free_mem}"
     fi
     
     # Storage info
-    echo -e "\n${YELLOW}Storage:${NC}"
-    df -h "${HOME}" 2>/dev/null | tail -1 | awk '{print "  Used: " $3 " / " $2 " (" $5 " used)"}'
+    print_section "Storage"
+    df -h "${HOME}" 2>/dev/null | tail -1 | awk -v cyan="\033[0;36m" -v nc="\033[0m" '{print "  " cyan "Used:" nc "      " $3 " / " $2 " (" $5 " used)"}'
     
+    print_divider
     log "INFO" "System information retrieved"
 }
 
@@ -205,7 +314,7 @@ monitor_resources() {
     print_header "Resource Monitor"
     
     # CPU usage
-    echo -e "${YELLOW}CPU Usage:${NC}"
+    print_section "CPU Usage"
     if [ -f /proc/stat ]; then
         local cpu_idle
         cpu_idle=$(awk '/^cpu /{print $5}' /proc/stat)
@@ -218,33 +327,35 @@ monitor_resources() {
         cpu_total2=$(awk '/^cpu /{print $2+$3+$4+$5+$6+$7+$8}' /proc/stat)
         local cpu_usage
         cpu_usage=$(echo "scale=2; 100 - (($cpu_idle2 - $cpu_idle) * 100 / ($cpu_total2 - $cpu_total))" | bc 2>/dev/null || echo "N/A")
-        echo "  Current: ${cpu_usage}%"
+        echo -e "  ${CYAN}Current:${NC} ${cpu_usage}%"
     fi
     
     # Memory usage
-    echo -e "\n${YELLOW}Memory Usage:${NC}"
+    print_section "Memory Usage"
     if [ -f /proc/meminfo ]; then
         local mem_percent
         mem_percent=$(awk '/MemTotal/{t=$2}/MemAvailable/{a=$2}END{printf "%.1f", ((t-a)/t)*100}' /proc/meminfo)
-        echo "  Used: ${mem_percent}%"
+        echo -e "  ${CYAN}Used:${NC} ${mem_percent}%"
         
-        # Create visual bar
+        # Create visual bar with colors
         local bar_length=30
         local filled
         filled=$(printf "%.0f" "$(echo "${mem_percent} * ${bar_length} / 100" | bc)")
         local empty=$((bar_length - filled))
-        printf "  ["
-        printf "%${filled}s" | tr ' ' '#'
-        printf "%${empty}s" | tr ' ' '-'
-        printf "]\n"
+        printf "  ${MAGENTA}[${GREEN}"
+        printf "%${filled}s" | tr ' ' '█'
+        printf "${DIM}"
+        printf "%${empty}s" | tr ' ' '░'
+        printf "${NC}${MAGENTA}]${NC}\n"
     fi
     
     # Top processes
-    echo -e "\n${YELLOW}Top Processes:${NC}"
+    print_section "Top Processes"
     if command -v ps &> /dev/null; then
         ps aux 2>/dev/null | head -6 || ps | head -6
     fi
     
+    print_divider
     log "INFO" "Resource monitoring completed"
 }
 
@@ -255,7 +366,7 @@ clean_system() {
     local cleaned_size=0
     
     # Clean Termux cache
-    echo -e "${YELLOW}Cleaning Termux cache...${NC}"
+    print_section "Termux Cache"
     if [ -d "${PREFIX}/var/cache" ]; then
         local cache_size
         cache_size=$(du -sk "${PREFIX}/var/cache" 2>/dev/null | cut -f1)
@@ -267,7 +378,7 @@ clean_system() {
     
     # Clean apt cache if available
     if command -v apt &> /dev/null; then
-        echo -e "\n${YELLOW}Cleaning apt cache...${NC}"
+        print_section "APT Cache"
         apt clean 2>/dev/null && print_success "Cleaned apt cache"
         apt autoclean 2>/dev/null && print_success "Cleaned old package files"
         apt autoremove -y 2>/dev/null && print_success "Removed unused packages"
@@ -275,31 +386,32 @@ clean_system() {
     
     # Clean pip cache if available
     if command -v pip &> /dev/null; then
-        echo -e "\n${YELLOW}Cleaning pip cache...${NC}"
+        print_section "Python Cache"
         pip cache purge 2>/dev/null && print_success "Cleaned pip cache"
     fi
     
     # Clean npm cache if available
     if command -v npm &> /dev/null; then
-        echo -e "\n${YELLOW}Cleaning npm cache...${NC}"
+        print_section "NPM Cache"
         npm cache clean --force 2>/dev/null && print_success "Cleaned npm cache"
     fi
     
     # Clean temporary files
-    echo -e "\n${YELLOW}Cleaning temporary files...${NC}"
+    print_section "Temporary Files"
     if [ -d "${TMPDIR:-/tmp}" ]; then
         find "${TMPDIR:-/tmp}" -type f -mtime +7 -delete 2>/dev/null
         print_success "Cleaned old temporary files"
     fi
     
     # Clean log files older than 30 days
-    echo -e "\n${YELLOW}Cleaning old log files...${NC}"
+    print_section "Log Files"
     if [ -d "${PREFIX}/var/log" ]; then
         find "${PREFIX}/var/log" -type f -name "*.log" -mtime +30 -delete 2>/dev/null
         print_success "Cleaned old log files"
     fi
     
-    echo -e "\n${GREEN}Cleanup completed!${NC}"
+    print_divider
+    echo -e "\n${GREEN}██ Cleanup completed successfully!${NC}"
     log "INFO" "System cleanup completed"
 }
 
@@ -308,25 +420,27 @@ update_system() {
     print_header "System Update"
     
     if command -v pkg &> /dev/null; then
-        echo -e "${YELLOW}Updating package lists...${NC}"
+        print_section "Package Lists"
         pkg update -y 2>/dev/null
         print_success "Package lists updated"
         
-        echo -e "\n${YELLOW}Upgrading packages...${NC}"
+        print_section "Upgrading Packages"
         pkg upgrade -y 2>/dev/null
         print_success "Packages upgraded"
     elif command -v apt &> /dev/null; then
-        echo -e "${YELLOW}Updating package lists...${NC}"
+        print_section "Package Lists"
         apt update 2>/dev/null
         print_success "Package lists updated"
         
-        echo -e "\n${YELLOW}Upgrading packages...${NC}"
+        print_section "Upgrading Packages"
         apt upgrade -y 2>/dev/null
         print_success "Packages upgraded"
     else
         print_warning "No supported package manager found"
     fi
     
+    print_divider
+    echo -e "\n${GREEN}██ System update completed!${NC}"
     log "INFO" "System update completed"
 }
 
@@ -337,7 +451,8 @@ ai_diagnostics() {
     local issues_found=0
     local suggestions=()
     
-    echo -e "${YELLOW}Analyzing system...${NC}\n"
+    print_section "System Analysis"
+    echo -e "  ${DIM}Scanning system for potential issues...${NC}\n"
     
     # Check memory usage
     if [ -f /proc/meminfo ]; then
@@ -393,18 +508,20 @@ ai_diagnostics() {
     fi
     
     # AI Suggestions
-    echo -e "\n${CYAN}=== AI Recommendations ===${NC}"
+    print_section "AI Recommendations"
     if [ ${#suggestions[@]} -eq 0 ]; then
-        echo -e "${GREEN}Your system appears to be healthy!${NC}"
-        echo "Suggestions for optimal performance:"
-        echo "  • Regularly update packages to get security fixes"
-        echo "  • Clean cache periodically to free up space"
-        echo "  • Monitor resource usage during heavy tasks"
+        echo -e "  ${GREEN}██ Your system appears to be healthy!${NC}"
+        echo ""
+        echo -e "  ${CYAN}Tips for optimal performance:${NC}"
+        echo -e "    ${DIM}•${NC} Regularly update packages to get security fixes"
+        echo -e "    ${DIM}•${NC} Clean cache periodically to free up space"
+        echo -e "    ${DIM}•${NC} Monitor resource usage during heavy tasks"
     else
-        echo "Based on the analysis, here are my recommendations:"
+        echo -e "  ${YELLOW}Based on the analysis, here are my recommendations:${NC}"
+        echo ""
         local i=1
         for suggestion in "${suggestions[@]}"; do
-            echo "  ${i}. ${suggestion}"
+            echo -e "    ${CYAN}${i}.${NC} ${suggestion}"
             i=$((i + 1))
         done
     fi
@@ -429,41 +546,48 @@ ai_diagnostics() {
         echo "}"
     } > "${AI_SUGGESTIONS_FILE}"
     
+    print_divider
     log "INFO" "AI diagnostics completed with ${issues_found} issues found"
 }
 
 # Interactive menu
 show_menu() {
     clear
-    print_header "Termux AI Manager v${VERSION}"
+    print_logo
+    print_themed_header "MAIN MENU"
     echo ""
-    echo "  1) System Information"
-    echo "  2) Resource Monitor"
-    echo "  3) AI Diagnostics"
-    echo "  4) System Cleanup"
-    echo "  5) Update System"
-    echo "  6) Full Maintenance (Clean + Update + Diagnose)"
-    echo "  7) Package Manager"
-    echo "  8) View Logs"
-    echo "  9) Help"
-    echo "  0) Exit"
+    echo -e "  ${CYAN}[${WHITE}1${CYAN}]${NC} ${WHITE}System Information${NC}"
+    echo -e "  ${CYAN}[${WHITE}2${CYAN}]${NC} ${WHITE}Resource Monitor${NC}"
+    echo -e "  ${CYAN}[${WHITE}3${CYAN}]${NC} ${WHITE}AI Diagnostics${NC}"
+    echo -e "  ${CYAN}[${WHITE}4${CYAN}]${NC} ${WHITE}System Cleanup${NC}"
+    echo -e "  ${CYAN}[${WHITE}5${CYAN}]${NC} ${WHITE}Update System${NC}"
+    echo -e "  ${CYAN}[${WHITE}6${CYAN}]${NC} ${WHITE}Full Maintenance${NC}"
+    echo -e "  ${CYAN}[${WHITE}7${CYAN}]${NC} ${WHITE}Package Manager${NC}"
+    echo -e "  ${CYAN}[${WHITE}8${CYAN}]${NC} ${WHITE}View Logs${NC}"
+    echo -e "  ${CYAN}[${WHITE}9${CYAN}]${NC} ${WHITE}Help${NC}"
+    echo -e "  ${RED}[${WHITE}0${RED}]${NC} ${WHITE}Exit${NC}"
     echo ""
-    echo -n "Select an option: "
+    print_themed_footer
+    echo ""
+    echo -ne "${YELLOW}Select an option ${CYAN}>> ${NC}"
 }
 
 # Package management menu
 show_package_menu() {
     clear
-    print_header "Package Manager"
+    print_logo
+    print_themed_header "PACKAGE MANAGER"
     echo ""
-    echo "  1) List installed requirements"
-    echo "  2) Add a new package"
-    echo "  3) Remove a package"
-    echo "  4) Install all requirements"
-    echo "  5) Search for packages"
-    echo "  0) Back to main menu"
+    echo -e "  ${CYAN}[${WHITE}1${CYAN}]${NC} ${WHITE}List installed requirements${NC}"
+    echo -e "  ${CYAN}[${WHITE}2${CYAN}]${NC} ${WHITE}Add a new package${NC}"
+    echo -e "  ${CYAN}[${WHITE}3${CYAN}]${NC} ${WHITE}Remove a package${NC}"
+    echo -e "  ${CYAN}[${WHITE}4${CYAN}]${NC} ${WHITE}Install all requirements${NC}"
+    echo -e "  ${CYAN}[${WHITE}5${CYAN}]${NC} ${WHITE}Search for packages${NC}"
+    echo -e "  ${RED}[${WHITE}0${RED}]${NC} ${WHITE}Back to main menu${NC}"
     echo ""
-    echo -n "Select an option: "
+    print_themed_footer
+    echo ""
+    echo -ne "${YELLOW}Select an option ${CYAN}>> ${NC}"
 }
 
 # Get user requirements file path
@@ -830,16 +954,20 @@ For more information, visit:
 EOF
 }
 
-# Show version
+# Show version with themed output
 show_version() {
-    echo "Termux AI Manager v${VERSION}"
-    echo "Copyright (c) 2025 B.Rooster <DaRipper>"
-    echo "License: MIT"
+    print_logo
+    echo -e "${CYAN}Version:${NC}   ${VERSION}"
+    echo -e "${CYAN}Author:${NC}    B.Rooster <DaRipper>"
+    echo -e "${CYAN}License:${NC}   MIT"
+    echo -e "${CYAN}Website:${NC}   https://github.com/DaRipper91/termux-ai-manager"
+    print_divider
 }
 
 # Interactive mode
 interactive_mode() {
     init_config
+    show_splash_screen
     while true; do
         show_menu
         read -r choice
@@ -854,11 +982,18 @@ interactive_mode() {
             7) package_manager_mode ;;
             8) view_logs ;;
             9) show_help ;;
-            0) echo "Goodbye!"; exit 0 ;;
+            0) 
+                clear
+                print_logo
+                echo -e "${YELLOW}Thanks for using Termux AI Manager!${NC}"
+                echo -e "${DIM}${WHITE}Goodbye!${NC}"
+                echo ""
+                exit 0 
+                ;;
             *) print_error "Invalid option" ;;
         esac
         echo ""
-        echo -n "Press Enter to continue..."
+        echo -ne "${DIM}Press ${WHITE}Enter${NC}${DIM} to continue...${NC}"
         read -r
     done
 }
