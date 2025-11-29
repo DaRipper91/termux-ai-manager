@@ -851,8 +851,9 @@ interactive_mode() {
             4) clean_system ;;
             5) update_system ;;
             6) full_maintenance ;;
-            7) view_logs ;;
-            8) show_help ;;
+            7) package_manager_mode ;;
+            8) view_logs ;;
+            9) show_help ;;
             0) echo "Goodbye!"; exit 0 ;;
             *) print_error "Invalid option" ;;
         esac
