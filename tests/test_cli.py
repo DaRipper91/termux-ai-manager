@@ -17,7 +17,7 @@ def test_version_command():
     res = subprocess.run(["bash", MAIN_SCRIPT, "version"], capture_output=True, text=True)
     assert res.returncode == 0
     assert "Version:" in res.stdout
-    assert "1.0.0" in res.stdout
+    assert "2.0.0" in res.stdout
     assert "B.Rooster <DaRipper>" in res.stdout
 
 def test_help_command():
@@ -26,6 +26,12 @@ def test_help_command():
     assert "USAGE:" in res.stdout
     assert "COMMANDS:" in res.stdout
     assert "diagnose" in res.stdout
+    assert "arch" in res.stdout
+
+def test_arch_command_invocation():
+    # Calling with input to avoid hanging if it prompts
+    res = subprocess.run(["bash", MAIN_SCRIPT, "arch"], input="exit\n", capture_output=True, text=True)
+    assert "Arch Linux PRoot Studio" in res.stdout
 
 def test_unknown_command_fails():
     res = subprocess.run(["bash", MAIN_SCRIPT, "nonexistent-cmd"], capture_output=True, text=True)

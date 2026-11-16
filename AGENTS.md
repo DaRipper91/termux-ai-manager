@@ -1,21 +1,23 @@
 # AGENTS.md — termux-ai-manager
 
 ## Project Overview
-`termux-ai-manager` is an intelligent system maintenance tool and terminal management environment tailored for Android Termux. It provides hardware resource telemetry, system diagnostics, automated cleaning, package updates, and interactive shell setups (including Fish shell installer).
+`termux-ai-manager` (v2.0.0) is the unified flagship system maintenance, terminal environment manager, and Arch Linux PRoot studio for Android Termux. It provides hardware resource telemetry, AI diagnostics, automated cleaning, package updates, Fish shell setup, and full Arch Linux PRoot deployment.
 
 - **Target Platform:** Android Termux (ARM64 / Android 7.0+).
 - **Core Executables:**
-  - `src/termux-ai-manager.sh` — Primary CLI and interactive maintenance suite.
+  - `src/termux-ai-manager.sh` — Primary CLI (`tam`) and interactive maintenance suite.
   - `src/fish-installer.sh` — Interactive Fish shell installer.
-- **Test Suite:** `tests/test_cli.py`
+  - `tools/universal_installer.py` & `tools/arch-installer/` — Arch Linux PRoot container studio.
+- **Test Suite:** `tests/test_cli.py`, `tests/test_tools_utils.py`
 
 ---
 
 ## Technical Stack & Dependencies
 - **Shell:** Bash (Termux standard `/data/data/com.termux/files/usr/bin/bash` with portable `/usr/bin/env bash` fallback).
+- **Python:** Python 3.10+ (for tools and automated testing).
 - **Core Dependencies:** Listed in `requirements.txt`:
-  - `nala`, `bc`, `coreutils`, `ncurses-utils`, `procps`, `findutils`, `grep`, `sed`, `gawk`.
-- **Testing Engine:** `pytest` (Python 3.10+) executing headless command checks and bash syntax validations.
+  - `nala`, `bc`, `coreutils`, `ncurses-utils`, `procps`, `findutils`, `grep`, `sed`, `gawk`, `proot`.
+- **Testing Engine:** `pytest` (Python 3.10+) executing headless command checks, Python utility unit tests, and bash syntax validations.
 
 ---
 
@@ -44,4 +46,5 @@ pytest tests/
 # Test CLI commands
 bash src/termux-ai-manager.sh version
 bash src/termux-ai-manager.sh help
+bash src/termux-ai-manager.sh arch
 ```

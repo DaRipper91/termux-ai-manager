@@ -14,7 +14,7 @@
 set -e
 
 # Configuration
-VERSION="1.0.0"
+VERSION="2.0.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REQUIREMENTS_FILE="${SCRIPT_DIR}/../requirements.txt"
 CONFIG_DIR="${HOME}/.config/termux-ai-manager"
@@ -646,6 +646,25 @@ ai_diagnostics() {
     log "INFO" "AI diagnostics completed with ${issues_found} issues found"
 }
 
+# Launch Arch PRoot Studio / Tools
+arch_tools_mode() {
+    print_header "Arch Linux PRoot Studio & Tools"
+    local tools_dir="${SCRIPT_DIR}/../tools"
+    if [ -f "${tools_dir}/universal_installer.py" ]; then
+        if command -v python3 &> /dev/null; then
+            python3 "${tools_dir}/universal_installer.py"
+        elif [ -f "${tools_dir}/arch-installer/main.sh" ]; then
+            bash "${tools_dir}/arch-installer/main.sh"
+        else
+            print_error "Python 3 is required to launch Arch PRoot Studio."
+        fi
+    elif [ -f "${tools_dir}/arch-installer/main.sh" ]; then
+        bash "${tools_dir}/arch-installer/main.sh"
+    else
+        print_error "Arch tools directory not found at ${tools_dir}"
+    fi
+}
+
 # Interactive menu
 show_menu() {
     clear
@@ -659,8 +678,9 @@ show_menu() {
     echo -e "  ${CYAN}[${WHITE}5${CYAN}]${NC} ${WHITE}Update System${NC}"
     echo -e "  ${CYAN}[${WHITE}6${CYAN}]${NC} ${WHITE}Full Maintenance${NC}"
     echo -e "  ${CYAN}[${WHITE}7${CYAN}]${NC} ${WHITE}Package Manager${NC}"
-    echo -e "  ${CYAN}[${WHITE}8${CYAN}]${NC} ${WHITE}View Logs${NC}"
-    echo -e "  ${CYAN}[${WHITE}9${CYAN}]${NC} ${WHITE}Help${NC}"
+    echo -e "  ${CYAN}[${WHITE}8${CYAN}]${NC} ${WHITE}Arch Linux PRoot Studio${NC}"
+    echo -e "  ${CYAN}[${WHITE}9${CYAN}]${NC} ${WHITE}View Logs${NC}"
+    echo -e "  ${CYAN}[${WHITE}10${CYAN}]${NC} ${WHITE}Help${NC}"
     echo -e "  ${RED}[${WHITE}0${RED}]${NC} ${WHITE}Exit${NC}"
     echo ""
     print_themed_footer
@@ -1034,6 +1054,7 @@ COMMANDS:
     clean       Clean system cache and temporary files
     update      Update system packages
     maintain    Run full maintenance (clean + update + diagnose)
+    arch        Launch Arch Linux PRoot Studio & toolset
     logs        View maintenance logs
     menu        Show interactive menu
     help        Show this help message
@@ -1042,6 +1063,7 @@ COMMANDS:
 EXAMPLES:
     termux-ai-manager diagnose    # Run AI diagnostics
     termux-ai-manager clean       # Clean system
+    termux-ai-manager arch        # Launch Arch PRoot Studio
     termux-ai-manager maintain    # Full maintenance
 
 For more information, visit:
@@ -1076,8 +1098,9 @@ interactive_mode() {
             5) update_system ;;
             6) full_maintenance ;;
             7) package_manager_mode ;;
-            8) view_logs ;;
-            9) show_help ;;
+            8) arch_tools_mode ;;
+            9) view_logs ;;
+            10) show_help ;;
             0) 
                 clear
                 print_logo
@@ -1117,6 +1140,9 @@ main() {
             ;;
         maintain)
             full_maintenance
+            ;;
+        arch|tools)
+            arch_tools_mode
             ;;
         logs)
             view_logs
